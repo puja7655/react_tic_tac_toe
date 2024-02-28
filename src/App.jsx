@@ -1,22 +1,38 @@
 import { useState } from "react"
 import GameBoard from "./components/GameBoard"
 import Player from "./components/player"
+import Log from "./components/Log"
+
+function deriveActivePlayer(gameTurns) {
+  let currentplayer = 'X'
+  if (gameTurns.length > 0 && gameTurns[0].player === 'X') {
+    currentplayer = 'O'
+  }
+  return currentplayer
+}
 
 function App() {
 
   const [gameTurns, setGameTurns] = useState([]) //gameTurns is array full of object whose intitial value is set to 0
-  const [activePlayer, setActivePlayer] = useState('X')
-  
+
+  //  const [activePlayer, setActivePlayer] = useState('X')
+  //Here I am removing the above state and trying to derive the activePlayer from gameTurns because we need the activePlayer from updateTurn
+  const activePlayer = deriveActivePlayer(gameTurns)
+
   function handleSelectSquare(rowIndex, colIndex) {
-    setActivePlayer((currActivePlayer) => currActivePlayer === 'X' ? 'O' : 'X')
     setGameTurns((prevTurns) => {
 
-      let currentPlayer = 'X'
+
       //not setting player: activePlayer because that is from different state and hence we will not alwayes get the updated turns or latest turn
       //PrevTurn is array of object . we are taking the object at first place as that is the latest turn
-      if (prevTurns.length > 0 && prevTurns[0].player === 'X') {
-        currentPlayer = 'O'
-      }
+
+      // let currentPlayer = 'X'
+      // if (prevTurns.length > 0 && prevTurns[0].player === 'X') {
+      //   currentPlayer = 'O'
+      // }
+
+      //here i am deriving the current player and to minimize the duplication of code i have created a helper function
+      let currentPlayer = deriveActivePlayer(prevTurns)
 
       const updatedTurns = [
         {
@@ -42,6 +58,7 @@ function App() {
         </ol>
         <GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns} />
       </div>
+      <Log turns={gameTurns} />
     </main >
   )
 }
