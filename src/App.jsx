@@ -3,6 +3,7 @@ import GameBoard from "./components/GameBoard"
 import Player from "./components/player"
 import Log from "./components/Log"
 import { WINNING_COMBINATIONS } from "./Winning-combinations"
+import GameOver from "./components/GameOver"
 
 const initialGameBoard = [
   [null, null, null],
@@ -26,8 +27,8 @@ function App() {
   //Here I am removing the above state and trying to derive the activePlayer from gameTurns because we need the activePlayer from updateTurn
   const activePlayer = deriveActivePlayer(gameTurns)
 
-
-  let gameBoard = initialGameBoard;
+// It is not advisable to mutate the original array in javascript
+  let gameBoard = [...initialGameBoard.map(array=>[...array])];
   //here we are traversing through the turns which is array of object then destructuring it .
   // i.e deriving the values to update the gameboard
   for (const turn of gameTurns) {
@@ -48,7 +49,7 @@ function App() {
       winner = firstSquareSymboal;
     }
   }
-
+  const hasDraw = gameTurns.length === 9 && !winner
 
   function handleSelectSquare(rowIndex, colIndex) {
     setGameTurns((prevTurns) => {
@@ -80,6 +81,10 @@ function App() {
     })
   }
 
+  function handleStart(){
+    setGameTurns([])
+  }
+
   return (
     <main>
       <div id="game-container">
@@ -87,8 +92,10 @@ function App() {
           <Player initialName="Player 1" symbol="X" isActive={activePlayer === 'X'} />
           <Player initialName="Player 2" symbol="O" isActive={activePlayer === 'O'} />
         </ol>
-        {winner && <p>You won {winner}!</p>}
-        <GameBoard onSelectSquare={handleSelectSquare} board={gameBoard} />
+        {(winner || hasDraw) && <p><GameOver winner={winner} onRematch={handleStart}/></p>}
+        <GameBoard 
+        onSelectSquare={handleSelectSquare} 
+        board={gameBoard}/>
       </div>
       <Log turns={gameTurns} />
     </main >

@@ -1,4 +1,3 @@
-// It is not advisable to mutate the original array in javascript
 export default function GameBoard({ onSelectSquare, board }) {
     return (
         <ol id="game-board">
